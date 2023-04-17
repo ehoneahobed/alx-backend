@@ -91,9 +91,6 @@ class Server:
         else:
             prev_page = page - 1
 
-        # determine the size of the returned data set
-        # page_size = page_size if page_size <= len(data) else len(data)
-
         return {'page_size': len(data),
                 'page': page,
                 'data': data,
