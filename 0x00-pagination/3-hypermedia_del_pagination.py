@@ -42,31 +42,24 @@ class Server:
     def get_hyper_index(self, index: int = None,
                         page_size: int = 10) -> Dict:
         """ return all data"""
-
-        if index is None:
-            index = 0
-
-        # validate the index
-        assert isinstance(index, int)
-        assert 0 <= index < len(self.indexed_dataset())
-        assert isinstance(page_size, int) and page_size > 0
-
         dataset = self.indexed_dataset()
-        total_items = len(dataset)
+        data_length = len(dataset)
+        assert 0 <= index < data_length
+        response = {}
+        data = []
+        response['index'] = index
+        for i in range(page_size):
+            while True:
+                curr = dataset.get(index)
+                index += 1
+                if curr is not None:
+                    break
+            data.append(curr)
 
-        current_page = index // page_size
-        current_index = current_page * page_size
-        next_index = current_index + page_size
-
-        page_data = []
-        for i in range(current_index, min(next_index, total_items)):
-            if i not in dataset:
-                continue
-            page_data.append(dataset[i])
-
-        return {
-            "index": current_index,
-            "next_index": min(next_index, total_items),
-            "page_size": page_size,
-            "data": page_data
-        }
+        response['data'] = data
+        response['page_size'] = len(data)
+        if dataset.get(index):
+            response['next_index'] = index
+        else:
+            response['next_index'] = None
+        return response
