@@ -47,22 +47,26 @@ class Server:
             index = 0
 
         # validate the index
-        assert type(index) == int and type(page_size) == int
+        assert isinstance(index, int)
         assert 0 <= index < len(self.indexed_dataset())
+        assert isinstance(page_size, int) and page_size > 0
 
-        data = []  # collect all indexed data
-        next_index = index + page_size
+        dataset = self.indexed_dataset()
+        total_items = len(dataset)
 
-        for value in range(index, next_index):
-            if self.indexed_dataset().get(value):
-                data.append(self.indexed_dataset()[value])
-            else:
-                value += 1
-                next_index += 1
+        current_page = index // page_size
+        current_index = current_page * page_size
+        next_index = current_index + page_size
+
+        page_data = []
+        for i in range(current_index, min(next_index, total_items)):
+            if i not in dataset:
+                continue
+            page_data.append(dataset[i])
 
         return {
-            'index': index,
-            'data': data,
-            'page_size': page_size,
-            'next_index': next_index
+            "index": current_index,
+            "next_index": min(next_index, total_items),
+            "page_size": page_size,
+            "data": page_data
         }
