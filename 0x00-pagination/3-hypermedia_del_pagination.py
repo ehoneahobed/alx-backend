@@ -39,7 +39,7 @@ class Server:
             }
         return self.__indexed_dataset
 
-    def get_hyper_index(self, index: int = None,
+    def get_hyper_index(self, index: int = 1,
                         page_size: int = 10) -> Dict:
         """ return all data"""
 
